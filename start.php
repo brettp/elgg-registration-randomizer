@@ -153,6 +153,7 @@ function registration_randomizer_log($msg, $all = true) {
 
 	if (!$all) {
 		file_put_contents(elgg_get_data_path() . 'rr_log.log', $msg . "\n", FILE_APPEND);
+		return;
 	}
 	
 	$data = $_REQUEST;
