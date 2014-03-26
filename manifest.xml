@@ -3,7 +3,7 @@
 	<name>Registration Randomizer</name>
 	<author>Brett Profitt</author>
 	<version>0.1</version>
-	<description>Randomly changes the URL of the registration form.</description>
+	<description>Randomly changes the URL of the registration form to thwart spammers.</description>
 	<website>http://www.elgg.org/</website>
 	<copyright>(C) Copyright Brett Profitt 2014</copyright>
 	<license>GNU General Public License version 2</license>
@@ -11,4 +11,5 @@
 		<type>elgg_release</type>
 		<version>1.8</version>
 	</requires>
+	<category>security</category>
 </plugin_manifest>
