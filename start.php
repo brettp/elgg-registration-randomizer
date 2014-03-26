@@ -17,7 +17,7 @@ function registration_randomizer_init() {
 	// check referrers
 	// don't need to pass anything to the action.
 	// just need to check that the token and ts in the referrer sent are correct.
-	elgg_register_plugin_hook_handler('action', 'all', 'registration_randomizer_referrer_check');
+	elgg_register_plugin_hook_handler('action', 'register', 'registration_randomizer_referrer_check');
 }
 
 /**
@@ -34,13 +34,13 @@ function registration_randomizer_page_handler($page) {
 
 	if (!registration_randomizer_is_valid_token($token, $ts)) {
 		registration_randomizer_tarpit();
-		forward('/', 403);
+		forward('/', 404);
 	} else {
 		include elgg_get_config('path') . 'pages/account/register.php';
 		return true;
 	}
 
-	forward('/', 403);
+	forward('/', 404);
 }
 
 /**
@@ -61,7 +61,7 @@ function registration_randomizer_tarpit($time = null) {
 /**
  * Hashes the site secret, UA, and a ts.
  *
- * @return string
+ * @return mixed A token if time or req is passed, and array of info if not
  */
 function registration_randomizer_generate_token($passed_time = null, $passed_req = null) {
 	if ($passed_time === null) {
@@ -123,6 +123,9 @@ function registration_randomizer_referrer_check($hook, $action, $return) {
 	}
 
 	if (!registration_randomizer_is_valid_token($token, $ts)) {
+		register_error("Cannot complete registration at this time.");
 		forward('/', 403);
 	}
+
+	return $return;
 }
