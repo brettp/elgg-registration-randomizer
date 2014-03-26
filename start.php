@@ -158,7 +158,6 @@ function registration_randomizer_log($msg, $all = true) {
 	
 	$data = $_REQUEST;
 	$data['referrer'] = filter_input(INPUT_SERVER, 'HTTP_REFERER');
-	$data['registering_action'] = 1;
 	$data['remote_ip'] = filter_input(INPUT_SERVER, 'REMOTE_ADDR');
 	$data['remote_ua'] = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT');
 	$data['time'] = date("r");
