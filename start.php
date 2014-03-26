@@ -118,6 +118,10 @@ function registration_randomizer_referrer_check($hook, $action, $return) {
 	$url = elgg_get_site_url();
 	list($register, $ts, $token) = explode('/', str_replace($url, '', $ref));
 
+	if ($register !== 'register') {
+		return $return;
+	}
+
 	if (!registration_randomizer_is_valid_token($token, $ts)) {
 		forward('/', 403);
 	}
