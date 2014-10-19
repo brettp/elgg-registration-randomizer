@@ -59,10 +59,29 @@ function registration_randomizer_tarpit($wait = 5) {
 	} else {
 		$wait = pow($count, 4);
 	}
+	// now limit it to something reasonable, like 90% of max execution time
+	$max_execution_time = ini_get('max_execution_time');
+	if ($max_execution_time === false) {
+		$max_execution_time = 30;
+	}
+	$max_execution_time = floor(0.9 * $max_execution_time);
+	if ($max_execution_time && $wait > $max_execution_time) {
+		$wait = $max_execution_time;
+	}
 
 	elgg_set_plugin_setting($setting_name, $count + 1, 'registration_randomizer');
 	registration_randomizer_log("Tarpitting $ip for $wait seconds after $count failures.", false);
-	sleep($wait);
+
+	if ($wait > 0) {
+		// close mysql connections for the time of a sleep
+		mysql_close(_elgg_services()->db->getLink('read'));
+		mysql_close(_elgg_services()->db->getLink('write'));
+
+		sleep($wait);
+
+		//restore connections
+		_elgg_services()->db->setupConnections();
+	}
 }
 
 /**
