@@ -15,6 +15,9 @@ function registration_randomizer_init() {
 
 	// check referrers
 	elgg_register_plugin_hook_handler('action', 'register', 'registration_randomizer_referrer_check');
+	
+	// replace view vars
+	elgg_register_plugin_hook_handler('view', 'output/url', 'registration_randomizer_output_url');
 
 	elgg_set_config('rr_debug', false);
 }
@@ -183,4 +186,23 @@ function registration_randomizer_log($msg, $all = true) {
 	$data['error'] = $msg;
 
 	file_put_contents(elgg_get_data_path() . 'rr_log.log', print_r($data, true), FILE_APPEND);
+}
+
+
+function registration_randomizer_output_url($hook, $type, $return, $params) {
+	$vars = $params['vars'];
+	
+	$url = elgg_extract('href', $vars, null);
+	if (!$url and isset($vars['value'])) {
+		$url = trim($vars['value']);
+		unset($vars['value']);
+	}
+
+	// check if /register URL and rewrite
+	if (!$vars['registration_randomizer'] && parse_url($url, PHP_URL_PATH) == '/register') {
+		$vars['registration_randomizer'] = true;
+		return elgg_view('output/registration_url', $vars);
+	}
+	
+	return $return;
 }
