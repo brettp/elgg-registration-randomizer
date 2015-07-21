@@ -1,0 +1,7 @@
+{
+    "name": "brettp/elgg-registration-randomizer",
+    "type": "elgg-plugin",
+    "extra": {
+        "installer-name": "registration_randomizer"
+    }
+}
