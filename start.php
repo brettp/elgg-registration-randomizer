@@ -39,7 +39,7 @@ function registration_randomizer_page_handler($page) {
 		registration_randomizer_tarpit();
 		forward('/', 404);
 	} else {
-		include elgg_get_config('path') . 'pages/account/register.php';
+		echo elgg_view_resource('account/register');
 		return true;
 	}
 	registration_randomizer_log("No token for registration page");
@@ -75,16 +75,7 @@ function registration_randomizer_tarpit($wait = 5) {
 	elgg_set_plugin_setting($setting_name, $count + 1, 'registration_randomizer');
 	registration_randomizer_log("Tarpitting $ip for $wait seconds after $count failures.", false);
 
-	if ($wait > 0) {
-		// close mysql connections for the time of a sleep
-		mysql_close(_elgg_services()->db->getLink('read'));
-		mysql_close(_elgg_services()->db->getLink('write'));
-
-		sleep($wait);
-
-		//restore connections
-		_elgg_services()->db->setupConnections();
-	}
+	sleep($wait);
 }
 
 /**
