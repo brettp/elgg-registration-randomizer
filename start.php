@@ -15,7 +15,7 @@ function registration_randomizer_init() {
 
 	// check referrers
 	elgg_register_plugin_hook_handler('action', 'register', 'registration_randomizer_referrer_check');
-	
+
 	// replace view vars
 	elgg_register_plugin_hook_handler('view', 'output/url', 'registration_randomizer_output_url');
 
@@ -39,7 +39,7 @@ function registration_randomizer_page_handler($page) {
 		registration_randomizer_tarpit();
 		forward('/', 404);
 	} else {
-		include elgg_get_config('path') . 'pages/account/register.php';
+		echo elgg_view_resource('account/register');
 		return true;
 	}
 	registration_randomizer_log("No token for registration page");
@@ -177,7 +177,7 @@ function registration_randomizer_log($msg, $all = true) {
 		file_put_contents(elgg_get_data_path() . 'rr_log.log', $msg . "\n", FILE_APPEND);
 		return;
 	}
-	
+
 	$data = $_REQUEST;
 	$data['referrer'] = filter_input(INPUT_SERVER, 'HTTP_REFERER');
 	$data['remote_ip'] = filter_input(INPUT_SERVER, 'REMOTE_ADDR');
@@ -191,7 +191,7 @@ function registration_randomizer_log($msg, $all = true) {
 
 function registration_randomizer_output_url($hook, $type, $return, $params) {
 	$vars = $params['vars'];
-	
+
 	$url = elgg_extract('href', $vars, null);
 	if (!$url and isset($vars['value'])) {
 		$url = trim($vars['value']);
@@ -203,6 +203,6 @@ function registration_randomizer_output_url($hook, $type, $return, $params) {
 		$vars['registration_randomizer'] = true;
 		return elgg_view('output/registration_url', $vars);
 	}
-	
+
 	return $return;
 }
