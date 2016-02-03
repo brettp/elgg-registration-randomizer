@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin_manifest xmlns="http://www.elgg.org/plugin_manifest/1.8">
+	<id>registration_randomizer</id>
 	<name>Registration Randomizer</name>
 	<author>Brett Profitt</author>
 	<version>0.1</version>
