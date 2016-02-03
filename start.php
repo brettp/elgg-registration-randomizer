@@ -17,13 +17,13 @@ function registration_randomizer_init() {
 	elgg_register_plugin_hook_handler('action', 'register', 'registration_randomizer_referrer_check');
 
 	// replace view vars
-	elgg_register_plugin_hook_handler('view', 'output/url', 'registration_randomizer_output_url');
+	elgg_register_plugin_hook_handler('register', 'menu:login', 'registration_randomizer_login_menu');
 
 	elgg_set_config('rr_debug', false);
 }
 
 /**
- * Serves registration URLs as created by the output/registration_url view
+ * Serves registration URLs as created by the registration_randomizer_login_menu() callback
  *
  * /register/:ts/:token Where :token is the token and :ts is the current timestamp.
  *
@@ -188,21 +188,22 @@ function registration_randomizer_log($msg, $all = true) {
 	file_put_contents(elgg_get_data_path() . 'rr_log.log', print_r($data, true), FILE_APPEND);
 }
 
-
-function registration_randomizer_output_url($hook, $type, $return, $params) {
-	$vars = $params['vars'];
-
-	$url = elgg_extract('href', $vars, null);
-	if (!$url and isset($vars['value'])) {
-		$url = trim($vars['value']);
-		unset($vars['value']);
+/**
+ * Adds timestamp and token to the registration link
+ *
+ * @param string         $hook
+ * @param string         $type
+ * @param ElggMenuItem[] $menu
+ * @param array          $params
+ * @return ElggMenuItem[] $menu
+ */
+function registration_randomizer_login_menu($hook, $type, $menu, $params) {
+	foreach ($menu as $key => $item) {
+		if ($item->getName() == 'register') {
+			$info = registration_randomizer_generate_token();
+			$item->setHref('/register/' . $info['ts'] . '/' . $info['token']);
+		}
 	}
 
-	// check if /register URL and rewrite
-	if (!$vars['registration_randomizer'] && parse_url($url, PHP_URL_PATH) == '/register') {
-		$vars['registration_randomizer'] = true;
-		return elgg_view('output/registration_url', $vars);
-	}
-
-	return $return;
+	return $menu;
 }
