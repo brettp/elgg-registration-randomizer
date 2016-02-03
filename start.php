@@ -36,48 +36,14 @@ function registration_randomizer_page_handler($page) {
 
 	if (!registration_randomizer_is_valid_token($token, $ts)) {
 		registration_randomizer_log("Invalid token for registration page");
-		registration_randomizer_tarpit();
 		forward('/', 404);
 	} else {
 		echo elgg_view_resource('account/register');
 		return true;
 	}
 	registration_randomizer_log("No token for registration page");
-	registration_randomizer_tarpit();
+
 	forward('/', 404);
-}
-
-/**
- * Sleep for a while to slow things down.
- *
- * @param int $multiplier A time multipler to tarpit repeat offending IPs
- */
-function registration_randomizer_tarpit($wait = 5) {
-	$ip = filter_input(INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP);
-	$setting_name = "{$ip}_tarpit_count";
-
-	$count = (int) elgg_get_plugin_setting($setting_name, 'registration_randomizer');
-	if ($count > 4) {
-		$wait = pow(4, 4);
-	} else {
-		$wait = pow($count, 4);
-	}
-	// now limit it to something reasonable, like 90% of max execution time
-	$max_execution_time = ini_get('max_execution_time');
-	if ($max_execution_time === false) {
-		$max_execution_time = 30;
-	}
-	$max_execution_time = floor(0.9 * $max_execution_time);
-	if ($max_execution_time && $wait > $max_execution_time) {
-		$wait = $max_execution_time;
-	}
-
-	elgg_set_plugin_setting($setting_name, $count + 1, 'registration_randomizer');
-	registration_randomizer_log("Tarpitting $ip for $wait seconds after $count failures.", false);
-
-	if ($wait > 0) {
-		sleep($wait);
-	}
 }
 
 /**
@@ -148,7 +114,6 @@ function registration_randomizer_referrer_check($hook, $action, $return) {
 	if (!registration_randomizer_is_valid_token($token, $ts)) {
 		registration_randomizer_log("Invalid referrer for registration action");
 		register_error("Cannot complete registration at this time.");
-		registration_randomizer_tarpit();
 		forward('/', 403);
 	}
 
