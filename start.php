@@ -76,14 +76,7 @@ function registration_randomizer_tarpit($wait = 5) {
 	registration_randomizer_log("Tarpitting $ip for $wait seconds after $count failures.", false);
 
 	if ($wait > 0) {
-		// close mysql connections for the time of a sleep
-		mysql_close(_elgg_services()->db->getLink('read'));
-		mysql_close(_elgg_services()->db->getLink('write'));
-
 		sleep($wait);
-
-		//restore connections
-		_elgg_services()->db->setupConnections();
 	}
 }
 
